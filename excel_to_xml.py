@@ -2,7 +2,7 @@
 """
 Created on Tue Jul 23 20:48:18 2024
 
-@author: sys-user
+@author: rangan r
 """
 
 import os
@@ -22,6 +22,7 @@ if not os.path.exists(opdir):
 for filename in os.listdir(inpdir):
     if filename.endswith('.xlsx'):
         # Load Excel data
+     try:
         df = pd.read_excel(os.path.join(inpdir, filename))
 
         # Create the root element
@@ -41,10 +42,15 @@ for filename in os.listdir(inpdir):
                     child = ET.SubElement(parent, tag)
                 parent = child
             parent.text = str(value)
+     except (PermissionError, OSError, IOError) as e:
+           print(f"Error whil reading input file: {e}")
 
         # Create a tree object and write to file
-        output_file = os.path.join(opdir, f'{os.path.splitext(filename)[0]}.xml')
-        tree = ET.ElementTree(root)
-        tree.write(output_file, encoding='utf-8', xml_declaration=True)
+     try:   
+           output_file = os.path.join(opdir, f'{os.path.splitext(filename)[0]}.xml')
+           tree = ET.ElementTree(root)
+           tree.write(output_file, encoding='utf-8', xml_declaration=True)
 
-        print(f"XML file has been created at {output_file}")
+           print(f"XML file has been created at {output_file}")
+     except (PermissionError, OSError, IOError) as e:
+           print(f"Error while creating xml file: {e}")
