@@ -25,22 +25,24 @@ def parse_element(element, parent_path=''):
         #parent_path + element.tag + '.' constructs the new parent path for the child element by appending the current element's tag and a dot (.) to the existing parent path
         #parse_element returns a list of tag-value pairs for the child element and its descendants.
     return tag_value_pairs
-
 # Process each XML file in the input directory
 for filename in os.listdir(inpdir):
     if filename.endswith('.xml'):
+        try:
         # Parse the XML file
-        tree = ET.parse(os.path.join(inpdir, filename))
-        root = tree.getroot()
+          tree = ET.parse(os.path.join(inpdir, filename))
+          root = tree.getroot()
 
         # Parse the XML tree into tag-value pairs
-        tag_value_pairs = parse_element(root)
+          tag_value_pairs = parse_element(root)
 
         # Convert to DataFrame
-        df = pd.DataFrame(tag_value_pairs, columns=['Tag', 'Value'])
+          df = pd.DataFrame(tag_value_pairs, columns=['Tag', 'Value'])
 
         # Write DataFrame to Excel
-        output_file = os.path.join(opdir, f'{os.path.splitext(filename)[0]}.xlsx')
-        df.to_excel(output_file, index=False)
-
-        print(f"Excel file has been created at {output_file}")
+          output_file = os.path.join(opdir, f'{os.path.splitext(filename)[0]}.xlsx')
+          df.to_excel(output_file, index=False)
+          print(f"Excel file has been created at {output_file}")
+        except (PermissionError, OSError, IOError) as e:
+          print(f"Error writing Excel file: {e}")
+        # if needed specific error handling can further be done here, e.g., retry, log, or notify    
